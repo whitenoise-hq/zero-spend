@@ -5,7 +5,7 @@ import "./App.css";
 import { BottomNav, type TabId } from "./components/BottomNav";
 import { ReminderSheet } from "./components/ReminderSheet";
 import { AD_GROUP_IDS } from "./config/ads";
-import { REMINDER_TIME_LABEL } from "./config/notification";
+import { IS_REMINDER_READY, REMINDER_TIME_LABEL } from "./config/notification";
 import { hasOnboarded, shouldPromptReminder } from "./domain/appState";
 import { newlyEarnedBadges } from "./domain/badges";
 import { addDays, type DateKey, monthKeyOf } from "./domain/date";
@@ -139,7 +139,7 @@ function App() {
         />
       )}
       <ReminderSheet
-        open={shouldPromptReminder(state)}
+        open={IS_REMINDER_READY && shouldPromptReminder(state)}
         onAgree={handleRequestReminder}
         onLater={markReminderPrompted}
       />

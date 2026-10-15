@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BottomActions } from "../components/BottomActions";
 import { NicknameField } from "../components/NicknameField";
 import { NumberField } from "../components/NumberField";
-import { REMINDER_TIME_LABEL } from "../config/notification";
+import { IS_REMINDER_READY, REMINDER_TIME_LABEL } from "../config/notification";
 import { PageHeader } from "../components/PageHeader";
 import { type AppState, isValidNickname, type Settings } from "../domain/appState";
 import { formatWon, parseWonInput } from "../domain/format";
@@ -56,25 +56,27 @@ export function SettingsPage({ state, onSave, onRequestReminder }: SettingsPageP
             />
           </div>
         </section>
-        <section className="card">
-          <div className="field">
-            <label>{REMINDER_TIME_LABEL} 기록 알림</label>
-            {state.reminder.agreed ? (
-              <p>
-                매일 {REMINDER_TIME_LABEL}에 기록 알림을 받고 있어요.
-                <br />
-                끄려면 토스 앱 전체 → 설정 → 알림 → 서비스별 알림에서 바꿀 수 있어요.
-              </p>
-            ) : (
-              <>
-                <p>매일 {REMINDER_TIME_LABEL}에 오늘 기록을 알려드려요.</p>
-                <Button size="medium" variant="weak" onClick={onRequestReminder}>
-                  알림 받기
-                </Button>
-              </>
-            )}
-          </div>
-        </section>
+        {IS_REMINDER_READY && (
+          <section className="card">
+            <div className="field">
+              <label>{REMINDER_TIME_LABEL} 기록 알림</label>
+              {state.reminder.agreed ? (
+                <p>
+                  매일 {REMINDER_TIME_LABEL}에 기록 알림을 받고 있어요.
+                  <br />
+                  끄려면 토스 앱 전체 → 설정 → 알림 → 서비스별 알림에서 바꿀 수 있어요.
+                </p>
+              ) : (
+                <>
+                  <p>매일 {REMINDER_TIME_LABEL}에 오늘 기록을 알려드려요.</p>
+                  <Button size="medium" variant="weak" onClick={onRequestReminder}>
+                    알림 받기
+                  </Button>
+                </>
+              )}
+            </div>
+          </section>
+        )}
       </div>
       <BottomActions>
         <Button

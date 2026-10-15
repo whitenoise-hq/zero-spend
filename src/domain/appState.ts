@@ -13,7 +13,7 @@ export interface Settings {
   monthlyGoal: number;
 }
 
-// 저녁 9시 기록 알림 동의 상태예요. 실제 발송은 토스 콘솔의 반복 발송이 해요.
+// 저녁 기록 알림 동의 상태예요. 실제 발송은 토스 콘솔의 반복 발송이 해요.
 export interface ReminderState {
   prompted: boolean;
   agreed: boolean;
