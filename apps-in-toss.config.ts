@@ -3,7 +3,7 @@ import { defineConfig } from '@apps-in-toss/web-framework/config';
 export default defineConfig({
   appName: 'zero-spend',
   brand: {
-    primaryColor: '#3182F6', // 화면에 노출될 앱의 기본 색상으로 바꿔주세요.
+    primaryColor: '#3182F6', // 앱 아이콘(assets/icon/app-icon.png) 배경색과 같은 토스 블루
   },
   permissions: [],
   webBundleDir: 'dist',
