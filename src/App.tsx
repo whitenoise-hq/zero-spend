@@ -13,6 +13,7 @@ import { type DayRecord, shouldShowInterstitial } from "./domain/records";
 import { useAppState } from "./hooks/useAppState";
 import { useFullScreenAd } from "./hooks/useFullScreenAd";
 import { useToday } from "./hooks/useToday";
+import { pathForTab, tabFromPath } from "./navigation/tabRoute";
 import { CalendarPage } from "./pages/CalendarPage";
 import { HomePage } from "./pages/HomePage";
 import { OnboardingPage } from "./pages/OnboardingPage";
@@ -34,7 +35,13 @@ function App() {
     setReminderAgreed,
   } = useAppState();
   const today = useToday();
-  const [tab, setTab] = useState<TabId>("home");
+  const [tab, setTab] = useState<TabId>(() => tabFromPath(window.location.pathname));
+
+  // 탭을 바꾸면 주소도 맞춰 둬요. 뒤로가기 기록은 쌓지 않아요.
+  const changeTab = (next: TabId) => {
+    setTab(next);
+    window.history.replaceState(window.history.state, "", pathForTab(next));
+  };
   const interstitial = useFullScreenAd(AD_GROUP_IDS.interstitial);
   const rewarded = useFullScreenAd(AD_GROUP_IDS.rewarded);
   const toast = useToast();
@@ -136,7 +143,7 @@ function App() {
         onAgree={handleRequestReminder}
         onLater={markReminderPrompted}
       />
-      <BottomNav current={tab} onChange={setTab} />
+      <BottomNav current={tab} onChange={changeTab} />
     </div>
   );
 }
