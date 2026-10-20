@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import "./App.css";
 import { BottomNav, type TabId } from "./components/BottomNav";
-import { ReminderSheet } from "./components/ReminderSheet";
+import { ReminderPrompt } from "./components/ReminderPrompt";
 import { YesterdaySheet } from "./components/YesterdaySheet";
 import { AD_GROUP_IDS } from "./config/ads";
 import { IS_REMINDER_READY, REMINDER_TIME_LABEL } from "./config/notification";
@@ -141,6 +141,11 @@ function App() {
           today={today}
           canRecoverYesterday={canRecoverYesterday}
           isYesterdayUnlocked={isYesterdayUnlocked}
+          reminderPrompt={
+            IS_REMINDER_READY && shouldPromptReminder(state) ? (
+              <ReminderPrompt onRequest={handleRequestReminder} onDismiss={markReminderPrompted} />
+            ) : undefined
+          }
           onRecord={handleRecord}
           onRecoverYesterday={handleRecoverYesterday}
         />
@@ -162,11 +167,6 @@ function App() {
         date={yesterday}
         onSubmit={handleRecordYesterday}
         onClose={() => setYesterdaySheetOpen(false)}
-      />
-      <ReminderSheet
-        open={IS_REMINDER_READY && shouldPromptReminder(state)}
-        onAgree={handleRequestReminder}
-        onLater={markReminderPrompted}
       />
       <BottomNav current={tab} onChange={changeTab} />
     </div>

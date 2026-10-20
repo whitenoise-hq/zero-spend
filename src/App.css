@@ -447,8 +447,36 @@ body {
   z-index: 9;
 }
 
-.bottom-actions > * {
+.bottom-actions {
+  flex-direction: column;
+}
+
+.bottom-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.bottom-actions-row > * {
   flex: 1;
+}
+
+/* 버튼 위 안내 (광고가 나온다는 안내 등) */
+.bottom-actions-note {
+  margin: 0;
+  text-align: center;
+}
+
+.ad-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-sub);
+}
+
+.page:has(~ .bottom-actions.with-note),
+.page:has(.bottom-actions.with-note) {
+  padding-bottom: calc(var(--bottom-actions-height) + 28px);
 }
 
 .bottom-actions.no-nav {
@@ -640,4 +668,37 @@ body {
 /* 어제 기록 시트의 지출 입력 */
 .sheet-form {
   padding: 8px 24px 8px;
+}
+
+/* 홈 안의 알림 안내 */
+.reminder-prompt {
+  display: flex;
+  align-items: center;
+  padding-right: 8px;
+}
+
+.reminder-prompt-main {
+  appearance: none;
+  border: none;
+  background: none;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.reminder-prompt-close {
+  appearance: none;
+  border: none;
+  background: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-weak);
+  cursor: pointer;
 }

@@ -8,8 +8,9 @@ import {
   Target,
   Trophy,
 } from "lucide-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
+import { AdNotice } from "../components/AdNotice";
 import { BottomActions } from "../components/BottomActions";
 import { PageHeader } from "../components/PageHeader";
 import { SpendForm } from "../components/SpendForm";
@@ -21,12 +22,15 @@ import {
   type DayRecord,
   monthStats,
   SPEND_CATEGORIES,
+  willShowInterstitialOnNextRecord,
 } from "../domain/records";
 
 interface HomePageProps {
   state: AppState;
   today: DateKey;
   canRecoverYesterday: boolean;
+  // 오늘 기록 뒤 홈 안에 보여줄 알림 안내 (없으면 숨겨요)
+  reminderPrompt?: ReactNode;
   // 광고를 이미 끝까지 봐서 어제 기록을 바로 남길 수 있는지
   isYesterdayUnlocked: boolean;
   onRecord: (date: DateKey, record: DayRecord) => void;
@@ -72,7 +76,9 @@ function TodayResult({ record }: { record: DayRecord }) {
 }
 
 export function HomePage(props: HomePageProps) {
-  const { state, today, canRecoverYesterday, isYesterdayUnlocked, onRecord, onRecoverYesterday } = props;
+  const { state, today, canRecoverYesterday, isYesterdayUnlocked, reminderPrompt, onRecord, onRecoverYesterday } =
+    props;
+  const showAdNotice = willShowInterstitialOnNextRecord(state.recordCount);
   const [isSpendFormOpen, setIsSpendFormOpen] = useState(false);
   const streak = currentStreak(state.records, today);
   const stats = monthStats(state.records, monthKeyOf(today), state.settings.dailyAverageSpend);
@@ -106,11 +112,15 @@ export function HomePage(props: HomePageProps) {
         </section>
 
         {todayRecord ? (
-          <section className="card">
-            <TodayResult record={todayRecord} />
-          </section>
+          <>
+            <section className="card">
+              <TodayResult record={todayRecord} />
+            </section>
+            {reminderPrompt}
+          </>
         ) : isSpendFormOpen ? (
           <SpendForm
+            showAdNotice={showAdNotice}
             onSubmit={(record) => {
               onRecord(today, record);
               setIsSpendFormOpen(false);
@@ -118,7 +128,7 @@ export function HomePage(props: HomePageProps) {
             onCancel={() => setIsSpendFormOpen(false)}
           />
         ) : (
-          <BottomActions>
+          <BottomActions note={showAdNotice ? <AdNotice /> : undefined}>
             <Button display="block" size="large" variant="weak" color="dark" onClick={() => setIsSpendFormOpen(true)}>
               오늘은 썼어요
             </Button>

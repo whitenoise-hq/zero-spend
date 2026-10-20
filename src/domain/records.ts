@@ -91,3 +91,8 @@ export function monthStats(
 export function shouldShowInterstitial(recordCount: number): boolean {
   return recordCount > 0 && recordCount % INTERSTITIAL_EVERY === 0;
 }
+
+// 기록 버튼 아래에 "기록하면 광고가 나와요"를 미리 보여주려고 다음 기록에서 광고가 나오는지 확인해요.
+export function willShowInterstitialOnNextRecord(recordCount: number): boolean {
+  return shouldShowInterstitial(recordCount + 1);
+}

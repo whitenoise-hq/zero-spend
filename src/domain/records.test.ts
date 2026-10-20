@@ -8,6 +8,7 @@ import {
   monthStats,
   setRecord,
   shouldShowInterstitial,
+  willShowInterstitialOnNextRecord,
 } from "./records";
 
 const success: DayRecord = { status: "success" };
@@ -108,5 +109,14 @@ describe("shouldShowInterstitial", () => {
     expect(shouldShowInterstitial(3)).toBe(true);
     expect(shouldShowInterstitial(6)).toBe(true);
     expect(shouldShowInterstitial(0)).toBe(false);
+  });
+});
+
+describe("willShowInterstitialOnNextRecord", () => {
+  it("다음 기록에서 광고가 나오는지 미리 알려줘요", () => {
+    expect(willShowInterstitialOnNextRecord(0)).toBe(false);
+    expect(willShowInterstitialOnNextRecord(2)).toBe(true);
+    expect(willShowInterstitialOnNextRecord(3)).toBe(false);
+    expect(willShowInterstitialOnNextRecord(5)).toBe(true);
   });
 });
