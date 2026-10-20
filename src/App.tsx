@@ -4,6 +4,7 @@ import { useState } from "react";
 import "./App.css";
 import { BottomNav, type TabId } from "./components/BottomNav";
 import { ReminderSheet } from "./components/ReminderSheet";
+import { YesterdaySheet } from "./components/YesterdaySheet";
 import { AD_GROUP_IDS } from "./config/ads";
 import { IS_REMINDER_READY, REMINDER_TIME_LABEL } from "./config/notification";
 import { hasOnboarded, shouldPromptReminder } from "./domain/appState";
@@ -44,6 +45,9 @@ function App() {
   };
   const interstitial = useFullScreenAd(AD_GROUP_IDS.interstitial);
   const rewarded = useFullScreenAd(AD_GROUP_IDS.rewarded);
+  // 광고를 끝까지 본 날짜(어제)를 기억해서, 시트를 닫았다가 다시 열어도 광고를 또 보지 않게 해요.
+  const [unlockedYesterday, setUnlockedYesterday] = useState<DateKey | null>(null);
+  const [isYesterdaySheetOpen, setYesterdaySheetOpen] = useState(false);
   const toast = useToast();
   // 하단은 버튼·네비게이션이 차지해서 토스트는 상단에 띄워요.
   const notify = (message: string) => toast.openToast(message, { type: "top", gap: 16 });
@@ -63,8 +67,9 @@ function App() {
 
   const yesterday = addDays(today, -1);
   const hasAnyRecord = Object.keys(state.records).length > 0;
+  const isYesterdayUnlocked = unlockedYesterday === yesterday;
   const canRecoverYesterday =
-    hasAnyRecord && state.records[yesterday] === undefined && rewarded.isReady;
+    hasAnyRecord && state.records[yesterday] === undefined && (rewarded.isReady || isYesterdayUnlocked);
 
   // 기록 전후를 비교해서 새로 받은 배지가 있으면 알려줘요.
   const recordWithBadges = (date: DateKey, dayRecord: DayRecord, fallbackToast?: string) => {
@@ -89,12 +94,25 @@ function App() {
     if (shouldShowInterstitial(next.recordCount)) interstitial.show();
   };
 
-  const handleRecoverYesterday = () =>
+  // 광고를 끝까지 보면 어제 무지출·지출을 직접 고르는 시트를 열어요.
+  const handleRecoverYesterday = () => {
+    // 개발 도구의 가짜 광고는 보상 이벤트를 주지 않아서, 개발 중에는 광고 없이 열어요.
+    if (isYesterdayUnlocked || import.meta.env.DEV) {
+      setYesterdaySheetOpen(true);
+      return;
+    }
     rewarded.show({
       onReward: () => {
-        recordWithBadges(yesterday, { status: "success" }, "어제 무지출을 기록했어요");
+        setUnlockedYesterday(yesterday);
+        setYesterdaySheetOpen(true);
       },
     });
+  };
+
+  const handleRecordYesterday = (dayRecord: DayRecord) => {
+    setYesterdaySheetOpen(false);
+    recordWithBadges(yesterday, dayRecord, "어제 기록을 남겼어요");
+  };
 
   // 시트를 먼저 닫고 토스 알림 동의 화면을 띄워요.
   const handleRequestReminder = () => {
@@ -122,6 +140,7 @@ function App() {
           state={state}
           today={today}
           canRecoverYesterday={canRecoverYesterday}
+          isYesterdayUnlocked={isYesterdayUnlocked}
           onRecord={handleRecord}
           onRecoverYesterday={handleRecoverYesterday}
         />
@@ -138,6 +157,12 @@ function App() {
           }}
         />
       )}
+      <YesterdaySheet
+        open={isYesterdaySheetOpen}
+        date={yesterday}
+        onSubmit={handleRecordYesterday}
+        onClose={() => setYesterdaySheetOpen(false)}
+      />
       <ReminderSheet
         open={IS_REMINDER_READY && shouldPromptReminder(state)}
         onAgree={handleRequestReminder}

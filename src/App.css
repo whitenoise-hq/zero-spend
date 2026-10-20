@@ -636,3 +636,8 @@ body {
 .sheet-cta-double > * {
   flex: 1;
 }
+
+/* 어제 기록 시트의 지출 입력 */
+.sheet-form {
+  padding: 8px 24px 8px;
+}

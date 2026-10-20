@@ -27,6 +27,8 @@ interface HomePageProps {
   state: AppState;
   today: DateKey;
   canRecoverYesterday: boolean;
+  // 광고를 이미 끝까지 봐서 어제 기록을 바로 남길 수 있는지
+  isYesterdayUnlocked: boolean;
   onRecord: (date: DateKey, record: DayRecord) => void;
   onRecoverYesterday: () => void;
 }
@@ -70,7 +72,7 @@ function TodayResult({ record }: { record: DayRecord }) {
 }
 
 export function HomePage(props: HomePageProps) {
-  const { state, today, canRecoverYesterday, onRecord, onRecoverYesterday } = props;
+  const { state, today, canRecoverYesterday, isYesterdayUnlocked, onRecord, onRecoverYesterday } = props;
   const [isSpendFormOpen, setIsSpendFormOpen] = useState(false);
   const streak = currentStreak(state.records, today);
   const stats = monthStats(state.records, monthKeyOf(today), state.settings.dailyAverageSpend);
@@ -130,9 +132,11 @@ export function HomePage(props: HomePageProps) {
           <section className="card">
             <p className="card-title">어제 기록을 깜빡했나요?</p>
             <Button display="block" size="large" variant="weak" onClick={onRecoverYesterday}>
-              광고 보고 어제 무지출 기록하기
+              {isYesterdayUnlocked ? "어제 기록하기" : "광고 보고 어제 기록하기"}
             </Button>
-            <p className="hint">어제({formatMonthDay(addDays(today, -1))}) 정말 안 썼을 때만 눌러 주세요.</p>
+            <p className="hint">
+              어제({formatMonthDay(addDays(today, -1))}) 무지출했는지, 썼는지 골라서 기록할 수 있어요.
+            </p>
           </section>
         )}
       </div>
